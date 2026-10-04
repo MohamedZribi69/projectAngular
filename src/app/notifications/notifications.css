@@ -1,10 +1,6 @@
-.content-card {
+.panel {
   height: 100%;
   padding: clamp(1.25rem, 3vw, 1.75rem);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 1.1rem;
-  box-shadow: 0 12px 34px rgb(23 43 77 / 6%);
 }
 
 .section-heading {
@@ -14,86 +10,182 @@
   gap: 1rem;
 }
 
-.section-label {
-  margin: 0 0 0.35rem;
-  color: var(--color-primary);
-  font-size: 0.75rem;
-  font-weight: 750;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
 h2 {
   margin: 0;
-  color: var(--color-ink);
-  font-size: 1.25rem;
+  font-size: 1.35rem;
 }
 
-.count {
+.link {
+  color: var(--color-primary);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.tabs {
+  position: relative;
   display: grid;
-  width: 2rem;
-  aspect-ratio: 1;
-  place-items: center;
-  color: #ffffff;
-  background: var(--color-primary);
-  border-radius: 50%;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 1.2rem;
+  padding: 0.3rem;
+  background: var(--color-primary-soft);
+  border-radius: 999px;
+}
+
+.tab-pill {
+  position: absolute;
+  top: 0.3rem;
+  bottom: 0.3rem;
+  left: 0.3rem;
+  width: calc(50% - 0.3rem);
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px -4px rgb(76 29 149 / 30%);
+  transition: transform 350ms var(--ease-out);
+}
+
+.tabs.second .tab-pill {
+  transform: translateX(100%);
+}
+
+.tabs button {
+  position: relative;
+  padding: 0.5rem;
+  color: var(--color-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
   font-size: 0.85rem;
-  font-weight: 750;
+  font-weight: 700;
+}
+
+.tabs button[aria-selected="true"] {
+  color: var(--color-primary-dark);
 }
 
 ul {
   display: grid;
-  gap: 0.85rem;
-  margin: 1.35rem 0 0;
+  gap: 0.6rem;
+  margin: 1rem 0 0;
   padding: 0;
   list-style: none;
 }
 
-li {
+li > button {
   display: flex;
-  gap: 0.75rem;
-  padding: 0.85rem;
-  background: #f7fafc;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 0.8rem;
+  color: inherit;
+  text-align: left;
+  background: #faf9ff;
   border: 1px solid transparent;
-  border-radius: 0.7rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition:
+    transform 250ms var(--ease-out),
+    border-color 200ms ease;
 }
 
-li.unread {
-  background: #f0f8f9;
-  border-color: #d3e9eb;
+li > button:hover {
+  border-color: #d8ccff;
+  transform: translateX(6px);
 }
 
-.notification-mark {
+li.unread > button {
+  background: linear-gradient(90deg, #fff7dc, #faf9ff 70%);
+  border-color: #ffe08a;
+}
+
+.icon {
+  display: grid;
   flex: 0 0 auto;
-  width: 0.55rem;
+  width: 2.6rem;
   aspect-ratio: 1;
-  margin-top: 0.3rem;
-  background: #a5b3bf;
-  border-radius: 50%;
+  place-items: center;
+  background: #ffffff;
+  border-radius: 0.8rem;
+  box-shadow: 0 4px 10px -4px rgb(76 29 149 / 25%);
+  font-size: 1.2rem;
 }
 
-.unread .notification-mark {
-  background: var(--color-primary);
-  box-shadow: 0 0 0 3px #d9eff0;
+.content {
+  display: grid;
+  flex: 1;
+  gap: 0.15rem;
+  min-width: 0;
 }
 
-.notification-content h3 {
-  margin: 0;
-  color: var(--color-ink);
+.content strong {
   font-size: 0.92rem;
 }
 
-.notification-content p {
-  margin: 0.3rem 0 0;
+.content span {
   color: var(--color-muted);
-  font-size: 0.85rem;
-  line-height: 1.45;
+  font-size: 0.82rem;
+  line-height: 1.4;
 }
 
-.notification-content time {
-  display: block;
-  margin-top: 0.5rem;
-  color: var(--color-primary-dark);
-  font-size: 0.76rem;
-  font-weight: 650;
+.unread .content strong::after {
+  content: "NEW";
+  margin-left: 0.45rem;
+  padding: 0.1rem 0.4rem;
+  color: #ffffff;
+  vertical-align: 1px;
+  background: var(--color-pink);
+  border-radius: 999px;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+}
+
+time {
+  color: var(--color-primary);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.arrow {
+  color: var(--color-muted);
+  font-size: 1.4rem;
+  transition: transform 250ms var(--ease-out);
+}
+
+li > button:hover .arrow {
+  transform: translateX(4px);
+}
+
+.empty {
+  padding: 1.5rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.modal-icon {
+  display: inline-grid;
+  width: 3.5rem;
+  aspect-ratio: 1;
+  margin-bottom: 1rem;
+  place-items: center;
+  background: var(--color-primary-soft);
+  border-radius: 1rem;
+  font-size: 1.8rem;
+  animation: pop-in 500ms 100ms var(--ease-out) both;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.modal-text {
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
 }

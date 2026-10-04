@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import type { ConferenceListing } from '../conference';
+import { ToastService } from '../toast.service';
 
 @Component({
   selector: 'app-liste-conference',
@@ -10,35 +11,36 @@ import type { ConferenceListing } from '../conference';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListeConference {
+  private readonly toastService = inject(ToastService);
   readonly conferenceSelected = output<ConferenceListing>();
   readonly conferences = signal<ConferenceListing[]>([
     {
-      title: 'Angular et les applications réactives',
-      description: 'Découvrez les Signals et les nouveautés du framework Angular.',
+      title: 'Angular and Reactive Applications',
+      description: 'Discover Signals and the latest features of the Angular framework.',
       date: '2026-11-12',
       place: 'Tunis',
       maxParticipants: 120,
       nbParticipants: 46,
     },
     {
-      title: 'Concevoir des interfaces accessibles',
-      description: 'Bonnes pratiques pour créer des interfaces inclusives.',
+      title: 'Designing Accessible Interfaces',
+      description: 'Best practices for building inclusive interfaces.',
       date: '2026-12-03',
       place: 'Sousse',
       maxParticipants: 80,
       nbParticipants: 73,
     },
     {
-      title: 'Rencontre des développeurs web',
-      description: 'Une journée d’échanges autour des technologies web.',
+      title: 'Web Developers Meetup',
+      description: 'A full day of talks about web technologies.',
       date: '2027-01-22',
       place: 'Sfax',
       maxParticipants: 50,
       nbParticipants: 50,
     },
     {
-      title: 'Conférence passée',
-      description: 'Cette conférence passée ne doit pas apparaître.',
+      title: 'Past conference',
+      description: 'This past conference should not be displayed.',
       date: '2025-05-10',
       place: 'Tunis',
       maxParticipants: 60,
@@ -73,5 +75,6 @@ export class ListeConference {
         item === conference ? { ...item, nbParticipants: item.nbParticipants + 1 } : item,
       ),
     );
+    this.toastService.show('You’re registered!', `See you at “${conference.title}”.`, '🎟️');
   }
 }

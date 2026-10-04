@@ -1,25 +1,48 @@
-<section class="content-card" id="amis" aria-labelledby="friends-title">
+<section class="card team reveal" style="--delay: 150ms" id="friends" aria-labelledby="friends-title">
   <div class="section-heading">
     <div>
-      <p class="section-label">Votre communauté</p>
-      <h2 id="friends-title">Mes amis</h2>
+      <p class="eyebrow">Your community</p>
+      <h2 id="friends-title">My friends</h2>
     </div>
-    <span class="count">{{ friends.length }}</span>
+    <div class="stack" aria-hidden="true">
+      @for (friend of friends; track friend.name) {
+        <span [style.background]="friend.color">{{ friend.initials }}</span>
+      }
+    </div>
   </div>
+
   <ul>
-    @for (friend of friends; track friend.name) {
-      <li>
-        <span class="friend-avatar" aria-hidden="true">{{ friend.initials }}</span>
-        <span class="friend-info">
-          <strong>{{ friend.name }}</strong>
-          <span>{{ friend.status }}</span>
-        </span>
-        <span
-          class="presence"
-          [class.is-online]="friend.online"
-          [attr.aria-label]="friend.online ? 'En ligne' : 'Hors ligne'"
-        ></span>
+    @for (friend of friends; track friend.name; let i = $index) {
+      <li class="reveal" [style.--delay.ms]="300 + i * 100">
+        <button type="button" (click)="selectedFriend.set(friend)">
+          <span class="friend-avatar" aria-hidden="true" [style.background]="friend.color">
+            {{ friend.initials }}
+            <span class="presence" [class.is-online]="friend.online"></span>
+          </span>
+          <span class="friend-info">
+            <strong>{{ friend.name }}</strong>
+            <span>{{ friend.role }}</span>
+          </span>
+          <span class="status" [class.is-online]="friend.online">{{ friend.status }}</span>
+        </button>
       </li>
     }
   </ul>
 </section>
+
+@if (selectedFriend(); as friend) {
+  <app-modal [label]="friend.name" (closed)="selectedFriend.set(null)">
+    <div class="profile-popup">
+      <span class="big-avatar" [style.background]="friend.color" aria-hidden="true">
+        {{ friend.initials }}
+      </span>
+      <h2>{{ friend.name }}</h2>
+      <p class="role">{{ friend.role }}</p>
+      <p class="status" [class.is-online]="friend.online">● {{ friend.status }}</p>
+      <div class="popup-actions">
+        <button class="btn btn-ghost" type="button" (click)="selectedFriend.set(null)">Close</button>
+        <button class="btn" type="button" (click)="wave(friend)">Say hi 👋</button>
+      </div>
+    </div>
+  </app-modal>
+}

@@ -1,15 +1,15 @@
 @if (conf(); as conference) {
-  <article class="conference-card" aria-label="Conférence sélectionnée">
-    <p class="section-label">Conférence sélectionnée</p>
+  <article class="conference-card" aria-label="Selected conference">
+    <p class="section-label">Selected conference</p>
     <h2>{{ conference.title }}</h2>
     <p class="conference-description">{{ conference.description }}</p>
     <dl class="conference-facts">
       <div>
         <dt>Date</dt>
-        <dd>{{ conference.date | date: 'dd/MM/yyyy' }}</dd>
+        <dd>{{ conference.date | date: 'MMM d, y' }}</dd>
       </div>
       <div>
-        <dt>Lieu</dt>
+        <dt>Location</dt>
         <dd>{{ conference.place }}</dd>
       </div>
       <div>
@@ -20,14 +20,13 @@
   </article>
 } @else {
   <section class="conference-card" aria-labelledby="conference-detail-title">
-    <p class="section-label">À la une</p>
+    <p class="section-label">Featured</p>
     <h2 id="conference-detail-title">{{ title() }}</h2>
     <p class="conference-description">
-      Découvrez les nouveautés Angular et les bonnes pratiques pour construire des applications
-      réactives.
+      Discover what’s new in Angular and best practices for building reactive applications.
     </p>
 
-    <label for="conference-title">Modifier le titre de la conférence</label>
+    <label for="conference-title">Edit the conference title</label>
     <input
       id="conference-title"
       type="text"
@@ -37,7 +36,7 @@
 
     <dl class="conference-facts">
       <div>
-        <dt>Intervenante</dt>
+        <dt>Speaker</dt>
         <dd>{{ speaker() }}</dd>
       </div>
       <div>
@@ -45,15 +44,15 @@
         <dd>{{ eventDate() }}</dd>
       </div>
       <div>
-        <dt>Places disponibles</dt>
+        <dt>Available seats</dt>
         <dd>{{ availableSeats() }}</dd>
       </div>
     </dl>
 
     @if (availableSeats() > 0) {
-      <button type="button" (click)="register()">S’inscrire</button>
+      <button type="button" (click)="register()">Register</button>
     } @else {
-      <p class="sold-out" role="status">Toutes les places sont réservées.</p>
+      <p class="sold-out" role="status">All seats are booked.</p>
     }
 
     @if (registrationMessage()) {

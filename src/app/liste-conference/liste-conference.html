@@ -1,48 +1,64 @@
 <section class="conference-list" aria-labelledby="conference-list-title">
   <header class="list-heading">
-    <p class="section-label">À venir</p>
-    <h2 id="conference-list-title">Les prochaines conférences</h2>
+    <p class="eyebrow">Upcoming</p>
+    <h2 id="conference-list-title">Next conferences</h2>
   </header>
 
   @if (upcomingConferences().length > 0) {
     <div class="conference-grid">
-      @for (conference of upcomingConferences(); track conference.title) {
-        <article class="conference-card">
-          <p class="conference-date">{{ conference.date | date: 'dd/MM/yyyy' }}</p>
+      @for (conference of upcomingConferences(); track conference.title; let i = $index) {
+        <article class="card conference-card reveal" [style.--delay.ms]="i * 120">
+          <div class="card-top">
+            <div class="date-badge" aria-hidden="true">
+              <strong>{{ conference.date | date: 'dd' }}</strong>
+              <span>{{ conference.date | date: 'MMM' }}</span>
+            </div>
+            <span class="place">📍 {{ conference.place }}</span>
+          </div>
+          <p class="conference-date">{{ conference.date | date: 'MMM d, y' }}</p>
           <h3>{{ conference.title | uppercase }}</h3>
           <p class="description">{{ conference.description }}</p>
-          <p class="place"><strong>Lieu :</strong> {{ conference.place }}</p>
-          <p class="seats">
-            <strong>Places restantes :</strong> {{ remainingSeats(conference) }}
-          </p>
-          <button
-            class="details-button"
-            type="button"
-            (click)="selectConference(conference)"
-          >
-            Voir les détails
-          </button>
-          <button
-            class="registration-button"
-            type="button"
-            [class.seats-green]="remainingSeats(conference) >= 10"
-            [class.seats-orange]="
-              remainingSeats(conference) > 0 && remainingSeats(conference) < 10
-            "
-            [class.seats-red]="remainingSeats(conference) === 0"
-            [disabled]="remainingSeats(conference) === 0"
-            (click)="register(conference)"
-          >
-            @if (remainingSeats(conference) > 0) {
-              S’inscrire
-            } @else {
-              Complet
-            }
-          </button>
+
+          <div class="seats">
+            <div class="seats-row">
+              <span>{{ conference.nbParticipants }} / {{ conference.maxParticipants }} registered</span>
+              <span><strong>Seats left:</strong> {{ remainingSeats(conference) }}</span>
+            </div>
+            <div class="progress" aria-hidden="true">
+              <span
+                [class.progress-orange]="remainingSeats(conference) > 0 && remainingSeats(conference) < 10"
+                [class.progress-red]="remainingSeats(conference) === 0"
+                [style.width.%]="(conference.nbParticipants / conference.maxParticipants) * 100"
+              ></span>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button class="details-button" type="button" (click)="selectConference(conference)">
+              View details
+            </button>
+            <button
+              class="registration-button"
+              type="button"
+              [class.seats-green]="remainingSeats(conference) >= 10"
+              [class.seats-orange]="
+                remainingSeats(conference) > 0 && remainingSeats(conference) < 10
+              "
+              [class.seats-red]="remainingSeats(conference) === 0"
+              [disabled]="remainingSeats(conference) === 0"
+              (click)="register(conference)"
+            >
+              @if (remainingSeats(conference) > 0) {
+                Register
+              } @else {
+                Sold out
+              }
+            </button>
+          </div>
         </article>
       }
     </div>
   } @else {
-    <p class="empty-state" role="status">Aucune conférence à venir pour le moment.</p>
+    <p class="empty-state" role="status">No upcoming conferences for now.</p>
   }
 </section>

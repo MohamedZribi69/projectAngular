@@ -36,7 +36,7 @@ describe('DetailsConference', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Conférence de test');
     expect(fixture.nativeElement.textContent).toContain('Description de test');
-    expect(fixture.nativeElement.textContent).toContain('12/11/2026');
+    expect(fixture.nativeElement.textContent).toContain('Nov 12, 2026');
     expect(fixture.nativeElement.textContent).toContain('46 / 120');
   });
 
@@ -61,7 +61,7 @@ describe('DetailsConference', () => {
 
     expect(component.availableSeats()).toBe(17);
     expect(fixture.nativeElement.textContent).toContain(
-      'Votre inscription est prise en compte.',
+      'Your registration has been confirmed.',
     );
   });
 
@@ -70,6 +70,6 @@ describe('DetailsConference', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('button')).toBeNull();
-    expect(fixture.nativeElement.textContent).toContain('Toutes les places sont réservées.');
+    expect(fixture.nativeElement.textContent).toContain('All seats are booked.');
   });
 });

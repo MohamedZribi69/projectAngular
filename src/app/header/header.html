@@ -1,9 +1,66 @@
 <header class="site-header">
   <div class="header-content">
-    <a class="brand" href="/" aria-label="Conférences, accueil">
-      <span class="brand-mark" aria-hidden="true">C</span>
-      <span>Conférences</span>
+    <a class="brand" href="#" aria-label="Mohamed Zribi, home">
+      <span class="brand-mark" aria-hidden="true">MZ</span>
+      <span class="brand-text">
+        <strong>Mohamed Zribi</strong>
+        <small>Enactus Team Leader</small>
+      </span>
     </a>
-    <p class="header-caption">Découvrez les rendez-vous qui font avancer les idées.</p>
+
+    <app-navigation></app-navigation>
+
+    <div class="bell-wrapper">
+      <button
+        class="bell"
+        type="button"
+        [class.has-unread]="notificationService.unreadCount() > 0"
+        [attr.aria-expanded]="menuOpen()"
+        aria-label="Open notifications"
+        (click)="toggleMenu()"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2Z"
+          />
+        </svg>
+        @if (notificationService.unreadCount() > 0) {
+          <span class="bell-count">{{ notificationService.unreadCount() }}</span>
+        }
+      </button>
+
+      @if (menuOpen()) {
+        <div class="dropdown" role="menu" aria-label="Latest notifications">
+          <div class="dropdown-head">
+            <strong>Notifications</strong>
+            @if (notificationService.unreadCount() > 0) {
+              <button type="button" (click)="notificationService.markAllAsRead()">
+                Mark all as read
+              </button>
+            }
+          </div>
+          <ul>
+            @for (item of notificationService.notifications(); track item.id) {
+              <li
+                role="menuitem"
+                tabindex="0"
+                [class.unread]="item.unread"
+                (click)="notificationService.markAsRead(item.id)"
+                (keydown.enter)="notificationService.markAsRead(item.id)"
+              >
+                <span class="item-icon" aria-hidden="true">{{ item.icon }}</span>
+                <span class="item-text">
+                  <strong>{{ item.title }}</strong>
+                  <small>{{ item.time }}</small>
+                </span>
+              </li>
+            }
+          </ul>
+          <a class="dropdown-foot" href="#notifications" (click)="menuOpen.set(false)">
+            See all notifications →
+          </a>
+        </div>
+      }
+    </div>
   </div>
 </header>

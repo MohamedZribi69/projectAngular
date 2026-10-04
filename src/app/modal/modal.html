@@ -1,0 +1,12 @@
+<div class="backdrop" (click)="close()"></div>
+<div
+  #dialog
+  class="dialog"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="label()"
+  tabindex="-1"
+>
+  <button class="close" type="button" aria-label="Close" (click)="close()">✕</button>
+  <ng-content />
+</div>

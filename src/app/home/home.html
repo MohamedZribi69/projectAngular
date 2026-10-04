@@ -1,34 +1,34 @@
 <main>
-  <header class="page-heading">
-    <p class="eyebrow">Votre espace personnel</p>
-    <h1>Bienvenue, Nazim</h1>
-    <p class="intro">Retrouvez votre profil, votre communauté et les dernières nouvelles.</p>
-  </header>
-  <app-navigation></app-navigation>
-  <div class="profile-layout">
-    <app-user-profile></app-user-profile>
+  <app-user-profile></app-user-profile>
+
+  <div class="community-grid">
     <app-friends-list></app-friends-list>
     <app-notifications></app-notifications>
   </div>
+
   <section class="conference-section" id="conferences" aria-labelledby="conference-list-title">
     <app-liste-conference
       (conferenceSelected)="selectConference($event)"
     ></app-liste-conference>
   </section>
+
   <section
-    class="conference-section"
+    class="conference-section featured"
     id="conference-detail"
     aria-labelledby="conference-section-title"
   >
     <header class="section-intro">
-      <p class="eyebrow">Data-binding et Signals</p>
-      <h2 id="conference-section-title">Détail d’une conférence</h2>
-      @if (selectedConference()) {
-        <p>Conférence sélectionnée dans la liste.</p>
-      } @else {
-        <p>Modifiez le titre ou inscrivez-vous pour voir l’interface réagir immédiatement.</p>
-      }
+      <p class="eyebrow">Data binding & Signals</p>
+      <h2 id="conference-section-title">Conference details</h2>
+      <p>Edit the title or register to see the interface react instantly.</p>
     </header>
-    <app-details-conference [conf]="selectedConference()"></app-details-conference>
+    <app-details-conference></app-details-conference>
   </section>
 </main>
+
+@if (selectedConference(); as conference) {
+  <app-modal label="Conference details" (closed)="selectedConference.set(null)">
+    <p class="eyebrow">Conference selected from the list.</p>
+    <app-details-conference [conf]="conference"></app-details-conference>
+  </app-modal>
+}

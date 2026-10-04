@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import type { ConferenceListing } from '../conference';
+import { ToastService } from '../toast.service';
 
 @Component({
   selector: 'app-details-conference',
@@ -10,9 +11,10 @@ import type { ConferenceListing } from '../conference';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailsConference {
+  private readonly toastService = inject(ToastService);
   readonly conf = input<ConferenceListing | null>(null);
-  readonly title = signal('Angular et les applications réactives');
-  readonly speaker = signal('Sarra Amri');
+  readonly title = signal('Angular and Reactive Applications');
+  readonly speaker = signal('Seif Ben Salem');
   readonly eventDate = signal('2026-11-12');
   readonly availableSeats = signal(18);
   readonly registrationMessage = signal('');
@@ -31,6 +33,7 @@ export class DetailsConference {
     }
 
     this.availableSeats.set(seats - 1);
-    this.registrationMessage.set('Votre inscription est prise en compte.');
+    this.registrationMessage.set('Your registration has been confirmed.');
+    this.toastService.show('Registration confirmed', this.title(), '🎟️');
   }
 }

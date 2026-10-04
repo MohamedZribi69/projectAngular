@@ -1,30 +1,28 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Modal } from '../modal/modal';
+import { AppNotification, NotificationService } from '../notification.service';
 
 @Component({
   selector: 'app-notifications',
+  imports: [Modal],
   templateUrl: './notifications.html',
   styleUrl: './notifications.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Notifications {
-  readonly notifications = [
-    {
-      title: 'Nouvelle conférence disponible',
-      message: 'Une nouvelle conférence tech a été ajoutée à la liste.',
-      time: 'Il y a 10 min',
-      unread: true,
-    },
-    {
-      title: 'Sarra vous a ajouté(e)',
-      message: 'Vous êtes maintenant amis sur la plateforme.',
-      time: 'Il y a 1 h',
-      unread: true,
-    },
-    {
-      title: 'Rappel de conférence',
-      message: 'Votre prochain rendez-vous approche.',
-      time: 'Hier',
-      unread: false,
-    },
-  ];
+  protected readonly service = inject(NotificationService);
+
+  readonly filter = signal<'all' | 'unread'>('all');
+  readonly opened = signal<AppNotification | null>(null);
+
+  readonly visible = computed(() =>
+    this.filter() === 'unread'
+      ? this.service.notifications().filter((n) => n.unread)
+      : this.service.notifications(),
+  );
+
+  open(notification: AppNotification): void {
+    this.opened.set(notification);
+    this.service.markAsRead(notification.id);
+  }
 }

@@ -1,14 +1,55 @@
-<section class="profile-card" id="profil" aria-labelledby="profile-title">
-  <p class="section-label">Espace personnel</p>
-  <div class="profile-content">
-    <div class="avatar" aria-hidden="true">NC</div>
-    <div>
-      <h2 id="profile-title">Nazim Chaouch</h2>
-      <p class="profile-role">Passionné de technologie et de conférences</p>
-      <p class="profile-location">Tunis, Tunisie</p>
+<section class="hero reveal" id="profile" aria-labelledby="profile-title">
+  <span class="blob blob-1" aria-hidden="true"></span>
+  <span class="blob blob-2" aria-hidden="true"></span>
+
+  <div class="hero-main">
+    <div class="avatar-ring" aria-hidden="true">
+      <div class="avatar">MZ</div>
+    </div>
+    <div class="hero-text">
+      <span class="badge">⭐ Enactus Team Leader</span>
+      <h1 id="profile-title">Welcome back, <span class="name">Mohamed</span></h1>
+      <p class="intro">
+        Mohamed Zribi · Tunis, Tunisia. Leading the Enactus team, building impactful projects and
+        growing the community.
+      </p>
+      <div class="actions">
+        <button class="btn btn-accent" type="button" (click)="applicantsOpen.set(true)">
+          Review applicants
+        </button>
+        <a class="btn btn-glass" href="#conferences">Upcoming conferences</a>
+      </div>
     </div>
   </div>
-  <p class="profile-bio">
-    Je découvre de nouvelles idées, partage mes expériences et rencontre la communauté tech.
-  </p>
+
+  <dl class="stats">
+    @for (stat of stats; track stat.label; let i = $index) {
+      <div class="stat reveal" [style.--delay.ms]="300 + i * 120">
+        <span class="stat-icon" aria-hidden="true">{{ stat.icon }}</span>
+        <dt>{{ stat.label }}</dt>
+        <dd>{{ displayValue(stat.value) }}</dd>
+      </div>
+    }
+  </dl>
 </section>
+
+@if (applicantsOpen()) {
+  <app-modal label="New Enactus applicants" (closed)="applicantsOpen.set(false)">
+    <p class="eyebrow">Recruitment</p>
+    <h2 class="modal-title">48 new applicants 🚀</h2>
+    <p class="modal-text">48 more people applied on the Enactus website. Here is how they split across teams:</p>
+    <ul class="bars">
+      @for (row of applicantsByTeam; track row.team; let i = $index) {
+        <li>
+          <span>{{ row.team }}</span>
+          <span class="bar"><span [style.width.%]="(row.count / 17) * 100" [style.--delay.ms]="i * 100"></span></span>
+          <strong>{{ row.count }}</strong>
+        </li>
+      }
+    </ul>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" (click)="applicantsOpen.set(false)">Later</button>
+      <button class="btn" type="button" (click)="startReview()">Start reviewing</button>
+    </div>
+  </app-modal>
+}

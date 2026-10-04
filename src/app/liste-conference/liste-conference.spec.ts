@@ -24,9 +24,9 @@ describe('ListeConference', () => {
     const page: HTMLElement = fixture.nativeElement;
     const text = page.textContent ?? '';
 
-    expect(text).toContain('ANGULAR ET LES APPLICATIONS RÉACTIVES');
-    expect(text).toContain('12/11/2026');
-    expect(text).not.toContain('CONFÉRENCE PASSÉE');
+    expect(text).toContain('ANGULAR AND REACTIVE APPLICATIONS');
+    expect(text).toContain('Nov 12, 2026');
+    expect(text).not.toContain('PAST CONFERENCE');
   });
 
   it('should emit the selected conference for the parent component', () => {
@@ -63,7 +63,7 @@ describe('ListeConference', () => {
     expect(buttons[1].classList.contains('seats-orange')).toBe(true);
     expect(buttons[2].classList.contains('seats-red')).toBe(true);
     expect(buttons[2].disabled).toBe(true);
-    expect(buttons[2].textContent).toContain('Complet');
+    expect(buttons[2].textContent).toContain('Sold out');
   });
 
   it('should show an empty-state message when there are no upcoming conferences', () => {
@@ -71,7 +71,7 @@ describe('ListeConference', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain(
-      'Aucune conférence à venir pour le moment.',
+      'No upcoming conferences for now.',
     );
   });
 });

@@ -23,8 +23,8 @@ describe('Home', () => {
   it('should display the profile, friends, and notifications sections', () => {
     const page: HTMLElement = fixture.nativeElement;
 
-    expect(page.querySelector('#profil')).toBeTruthy();
-    expect(page.querySelector('#amis')).toBeTruthy();
+    expect(page.querySelector('#profile')).toBeTruthy();
+    expect(page.querySelector('#friends')).toBeTruthy();
     expect(page.querySelector('#notifications')).toBeTruthy();
     expect(page.querySelector('#conferences')).toBeTruthy();
   });
@@ -32,7 +32,7 @@ describe('Home', () => {
   it('should display the conference details section', () => {
     const page: HTMLElement = fixture.nativeElement;
 
-    expect(page.textContent).toContain('Détail d’une conférence');
+    expect(page.textContent).toContain('Conference details');
     expect(page.querySelector('app-details-conference')).toBeTruthy();
     expect(page.querySelector('app-liste-conference')).toBeTruthy();
   });
@@ -40,34 +40,39 @@ describe('Home', () => {
   it('should pass a selected conference from the list to the details component', () => {
     const page: HTMLElement = fixture.nativeElement;
     const selectButton = Array.from(page.querySelectorAll<HTMLButtonElement>('button.details-button')).find((button) =>
-      button.textContent?.includes('Voir les détails'),
+      button.textContent?.includes('View details'),
     );
 
     expect(selectButton).toBeDefined();
-    expect(page.textContent).toContain('Modifiez le titre ou inscrivez-vous');
+    expect(page.textContent).toContain('Edit the title or register');
+
+    expect(page.querySelector('[role="dialog"]')).toBeNull();
 
     selectButton?.click();
     fixture.detectChanges();
 
-    expect(page.textContent).toContain('Conférence sélectionnée dans la liste.');
-    expect(page.textContent).toContain('Angular et les applications réactives');
-    expect(page.textContent).toContain('Participants');
-    expect(page.textContent).not.toContain('Modifier le titre de la conférence');
+    const dialog = page.querySelector<HTMLElement>('[role="dialog"]');
+    expect(dialog).toBeTruthy();
+    expect(dialog?.textContent).toContain('Conference selected from the list.');
+    expect(dialog?.textContent).toContain('Angular and Reactive Applications');
+    expect(dialog?.textContent).toContain('Participants');
+    expect(dialog?.textContent).not.toContain('Edit the conference title');
 
     const secondSelectButton = Array.from(
       page.querySelectorAll<HTMLButtonElement>('button.details-button'),
     ).find(
       (button) =>
-        button.textContent?.includes('Voir les détails') &&
+        button.textContent?.includes('View details') &&
         button
           .closest('article')
-          ?.textContent?.includes('CONCEVOIR DES INTERFACES ACCESSIBLES'),
+          ?.textContent?.includes('DESIGNING ACCESSIBLE INTERFACES'),
     );
 
     secondSelectButton?.click();
     fixture.detectChanges();
 
-    expect(page.textContent).toContain('Concevoir des interfaces accessibles');
-    expect(page.textContent).toContain('Sousse');
+    const updatedDialog = page.querySelector<HTMLElement>('[role="dialog"]');
+    expect(updatedDialog?.textContent).toContain('Designing Accessible Interfaces');
+    expect(updatedDialog?.textContent).toContain('Sousse');
   });
 });

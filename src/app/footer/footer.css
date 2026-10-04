@@ -1,8 +1,8 @@
 .site-footer {
   margin-top: 4rem;
   padding: 1.5rem 1rem;
-  color: #d9e6f2;
-  background: #102a43;
+  color: #d9dbff;
+  background: var(--color-header);
   text-align: center;
 }
 
@@ -13,5 +13,5 @@
 
 .site-footer span {
   padding: 0 0.35rem;
-  color: #f2b84b;
+  color: var(--color-accent);
 }

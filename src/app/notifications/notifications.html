@@ -1,23 +1,51 @@
-<section class="content-card" id="notifications" aria-labelledby="notifications-title">
+<section class="card panel reveal" style="--delay: 250ms" id="notifications" aria-labelledby="notifications-title">
   <div class="section-heading">
     <div>
-      <p class="section-label">Restez informé</p>
+      <p class="eyebrow">Enactus updates</p>
       <h2 id="notifications-title">Notifications</h2>
     </div>
-    <span class="count" [attr.aria-label]="notifications.length + ' notifications'">
-      {{ notifications.length }}
-    </span>
+    @if (service.unreadCount() > 0) {
+      <button class="link" type="button" (click)="service.markAllAsRead()">Mark all as read</button>
+    }
   </div>
+
+  <div class="tabs" role="tablist" [class.second]="filter() === 'unread'">
+    <span class="tab-pill" aria-hidden="true"></span>
+    <button role="tab" type="button" [attr.aria-selected]="filter() === 'all'" (click)="filter.set('all')">
+      All
+    </button>
+    <button role="tab" type="button" [attr.aria-selected]="filter() === 'unread'" (click)="filter.set('unread')">
+      Unread ({{ service.unreadCount() }})
+    </button>
+  </div>
+
   <ul>
-    @for (notification of notifications; track notification.title) {
-      <li [class.unread]="notification.unread">
-        <span class="notification-mark" aria-hidden="true"></span>
-        <div class="notification-content">
-          <h3>{{ notification.title }}</h3>
-          <p>{{ notification.message }}</p>
-          <time>{{ notification.time }}</time>
-        </div>
+    @for (notification of visible(); track notification.id; let i = $index) {
+      <li class="reveal" [style.--delay.ms]="i * 80" [class.unread]="notification.unread">
+        <button type="button" (click)="open(notification)">
+          <span class="icon" aria-hidden="true">{{ notification.icon }}</span>
+          <span class="content">
+            <strong>{{ notification.title }}</strong>
+            <span>{{ notification.message }}</span>
+            <time>{{ notification.time }}</time>
+          </span>
+          <span class="arrow" aria-hidden="true">›</span>
+        </button>
       </li>
+    } @empty {
+      <li class="empty">🎉 You’re all caught up!</li>
     }
   </ul>
 </section>
+
+@if (opened(); as notification) {
+  <app-modal [label]="notification.title" (closed)="opened.set(null)">
+    <span class="modal-icon" aria-hidden="true">{{ notification.icon }}</span>
+    <p class="eyebrow">{{ notification.time }}</p>
+    <h2 class="modal-title">{{ notification.title }}</h2>
+    <p class="modal-text">{{ notification.details }}</p>
+    <div class="modal-actions">
+      <button class="btn" type="button" (click)="opened.set(null)">Got it</button>
+    </div>
+  </app-modal>
+}
