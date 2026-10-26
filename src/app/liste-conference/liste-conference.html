@@ -1,19 +1,49 @@
 <section class="conference-list" aria-labelledby="conference-list-title">
   <header class="list-heading">
-    <p class="eyebrow">Upcoming</p>
-    <h2 id="conference-list-title">Next conferences</h2>
+    <div>
+      <p class="eyebrow">Upcoming</p>
+      <h2 id="conference-list-title">Next conferences</h2>
+    </div>
+    @if (!error()) {
+      <button class="btn add-button" type="button" (click)="openAdd()">+ Add conference</button>
+    }
   </header>
 
-  @if (upcomingConferences().length > 0) {
+  @if (error()) {
+    <div class="empty-state error-state" role="alert">
+      <p>Could not reach the conference API. Start it with <code>npm run api</code>.</p>
+      <button class="btn btn-ghost" type="button" (click)="load()">Try again</button>
+    </div>
+  } @else if (upcomingConferences().length > 0) {
     <div class="conference-grid">
-      @for (conference of upcomingConferences(); track conference.title; let i = $index) {
+      @for (conference of upcomingConferences(); track conference.id ?? conference.title; let i = $index) {
         <article class="card conference-card reveal" [style.--delay.ms]="i * 120">
           <div class="card-top">
             <div class="date-badge" aria-hidden="true">
               <strong>{{ conference.date | date: 'dd' }}</strong>
               <span>{{ conference.date | date: 'MMM' }}</span>
             </div>
-            <span class="place">📍 {{ conference.place }}</span>
+            <div class="card-tools">
+              <span class="place">📍 {{ conference.place }}</span>
+              <button
+                class="icon-button edit-button"
+                type="button"
+                [attr.aria-label]="'Edit ' + conference.title"
+                title="Edit"
+                (click)="openEdit(conference)"
+              >
+                ✏️
+              </button>
+              <button
+                class="icon-button delete-button"
+                type="button"
+                [attr.aria-label]="'Delete ' + conference.title"
+                title="Delete"
+                (click)="toDelete.set(conference)"
+              >
+                🗑️
+              </button>
+            </div>
           </div>
           <p class="conference-date">{{ conference.date | date: 'MMM d, y' }}</p>
           <h3>{{ conference.title | uppercase }}</h3>
@@ -62,3 +92,60 @@
     <p class="empty-state" role="status">No upcoming conferences for now.</p>
   }
 </section>
+
+@if (form(); as draft) {
+  <app-modal [label]="draft.id === undefined ? 'Add conference' : 'Edit conference'" (closed)="form.set(null)">
+    <p class="eyebrow">{{ draft.id === undefined ? 'New' : 'Update' }}</p>
+    <h2 class="modal-title">{{ draft.id === undefined ? 'Add a conference' : 'Edit conference' }}</h2>
+    <form
+      class="edit-form"
+      (submit)="
+        $event.preventDefault();
+        save(title.value, description.value, date.value, place.value, +max.value)
+      "
+    >
+      <label>
+        Title
+        <input #title type="text" required placeholder="e.g. Enactus Innovation Day" [value]="draft.title" />
+      </label>
+      <label>
+        Description
+        <textarea #description rows="3" [value]="draft.description"></textarea>
+      </label>
+      <div class="form-row">
+        <label>
+          Date
+          <input #date type="date" required [value]="draft.date" />
+        </label>
+        <label>
+          Location
+          <input #place type="text" required placeholder="City" [value]="draft.place" />
+        </label>
+      </div>
+      <label>
+        Max participants
+        <input #max type="number" required [min]="draft.nbParticipants" [value]="draft.maxParticipants" />
+      </label>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" (click)="form.set(null)">Cancel</button>
+        <button class="btn" type="submit">
+          {{ draft.id === undefined ? 'Add conference' : 'Save changes' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+}
+
+@if (toDelete(); as conference) {
+  <app-modal label="Delete conference" (closed)="toDelete.set(null)">
+    <span class="danger-icon" aria-hidden="true">🗑️</span>
+    <h2 class="modal-title">Delete this conference?</h2>
+    <p class="modal-text">
+      “{{ conference.title }}” will be permanently removed. This cannot be undone.
+    </p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" (click)="toDelete.set(null)">Cancel</button>
+      <button class="btn btn-danger" type="button" (click)="delete()">Delete</button>
+    </div>
+  </app-modal>
+}

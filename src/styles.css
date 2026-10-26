@@ -120,6 +120,64 @@ button {
   background: var(--color-primary-soft);
 }
 
+.btn-danger {
+  background: #be123c;
+}
+
+/* Pop-up content and forms */
+app-modal .modal-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+app-modal .modal-text {
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.edit-form {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.2rem;
+}
+
+.edit-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.edit-form input,
+.edit-form textarea {
+  padding: 0.65rem 0.75rem;
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+  border-radius: 0.7rem;
+  font: inherit;
+  font-weight: 400;
+  resize: vertical;
+}
+
+.edit-form input:focus,
+.edit-form textarea:focus {
+  border-color: var(--color-primary);
+  outline: 3px solid rgb(109 40 217 / 18%);
+}
+
+.form-row {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+app-modal .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
 .reveal {
   animation: fade-up 700ms var(--ease-out) both;
   animation-delay: var(--delay, 0ms);

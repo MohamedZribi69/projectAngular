@@ -5,6 +5,7 @@ export interface Conference {
 }
 
 export interface ConferenceListing {
+  id?: number;
   title: string;
   description: string;
   date: string;

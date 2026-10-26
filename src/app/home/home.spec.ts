@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { Home } from './home';
+import { CONFERENCES_API, TEST_CONFERENCES } from '../testing/conference-test-data';
 
 describe('Home', () => {
   let component: Home;
@@ -9,10 +12,13 @@ describe('Home', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Home],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Home);
     component = fixture.componentInstance;
+    await fixture.whenStable();
+    TestBed.inject(HttpTestingController).expectOne(CONFERENCES_API).flush(TEST_CONFERENCES);
     await fixture.whenStable();
   });
 

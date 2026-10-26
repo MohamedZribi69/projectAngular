@@ -1,80 +1,104 @@
 import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import type { ConferenceListing } from '../conference';
+import { ConferenceService } from '../conference.service';
+import { Modal } from '../modal/modal';
 import { ToastService } from '../toast.service';
 
 @Component({
   selector: 'app-liste-conference',
-  imports: [DatePipe, UpperCasePipe],
+  imports: [DatePipe, UpperCasePipe, Modal],
   templateUrl: './liste-conference.html',
   styleUrl: './liste-conference.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListeConference {
-  private readonly toastService = inject(ToastService);
+  private readonly service = inject(ConferenceService);
+  private readonly toast = inject(ToastService);
+
   readonly conferenceSelected = output<ConferenceListing>();
-  readonly conferences = signal<ConferenceListing[]>([
-    {
-      title: 'Angular and Reactive Applications',
-      description: 'Discover Signals and the latest features of the Angular framework.',
-      date: '2026-11-12',
-      place: 'Tunis',
-      maxParticipants: 120,
-      nbParticipants: 46,
-    },
-    {
-      title: 'Designing Accessible Interfaces',
-      description: 'Best practices for building inclusive interfaces.',
-      date: '2026-12-03',
-      place: 'Sousse',
-      maxParticipants: 80,
-      nbParticipants: 73,
-    },
-    {
-      title: 'Web Developers Meetup',
-      description: 'A full day of talks about web technologies.',
-      date: '2027-01-22',
-      place: 'Sfax',
-      maxParticipants: 50,
-      nbParticipants: 50,
-    },
-    {
-      title: 'Past conference',
-      description: 'This past conference should not be displayed.',
-      date: '2025-05-10',
-      place: 'Tunis',
-      maxParticipants: 60,
-      nbParticipants: 32,
-    },
-  ]);
 
+  // State
+  readonly conferences = signal<ConferenceListing[]>([]); // all conferences from the API
+  readonly error = signal(false); // true when the API cannot be reached
+  readonly form = signal<ConferenceListing | null>(null); // conference shown in the add/edit pop-up
+  readonly toDelete = signal<ConferenceListing | null>(null); // conference waiting for delete confirmation
+
+  // Only the conferences from today on
   readonly upcomingConferences = computed(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return this.conferences().filter(
-      (conference) => new Date(`${conference.date}T00:00:00`) >= today,
-    );
+    const today = new Date().toLocaleDateString('en-CA'); // "YYYY-MM-DD", local time
+    return this.conferences().filter((c) => c.date >= today);
   });
 
-  remainingSeats(conference: ConferenceListing): number {
-    return Math.max(0, conference.maxParticipants - conference.nbParticipants);
+  constructor() {
+    this.load();
   }
 
-  selectConference(conference: ConferenceListing): void {
-    this.conferenceSelected.emit(conference);
+  // GET — read every conference
+  load(): void {
+    this.error.set(false);
+    this.service.getConferences().subscribe({
+      next: (data) => this.conferences.set(data),
+      error: () => this.error.set(true),
+    });
   }
 
-  register(conference: ConferenceListing): void {
-    if (this.remainingSeats(conference) === 0) {
-      return;
+  remainingSeats(c: ConferenceListing): number {
+    return Math.max(0, c.maxParticipants - c.nbParticipants);
+  }
+
+  selectConference(c: ConferenceListing): void {
+    this.conferenceSelected.emit(c);
+  }
+
+  // UPDATE — register = one more participant
+  register(c: ConferenceListing): void {
+    if (this.remainingSeats(c) === 0) return;
+
+    this.service.updateConference(c.id!, { ...c, nbParticipants: c.nbParticipants + 1 }).subscribe((saved) => {
+      this.conferences.update((list) => list.map((item) => (item.id === saved.id ? saved : item)));
+      this.toast.show('You’re registered!', saved.title, '🎟️');
+    });
+  }
+
+  // Open the pop-up empty (add) or filled (edit)
+  openAdd(): void {
+    this.form.set({ title: '', description: '', date: '', place: '', maxParticipants: 50, nbParticipants: 0 });
+  }
+
+  openEdit(c: ConferenceListing): void {
+    this.form.set(c);
+  }
+
+  // ADD or UPDATE — called with the values typed in the form
+  save(title: string, description: string, date: string, place: string, maxParticipants: number): void {
+    const conference = { ...this.form()!, title, description, date, place, maxParticipants };
+
+    if (conference.id === undefined) {
+      // ADD
+      this.service.addConference(conference).subscribe((created) => {
+        this.conferences.update((list) => [...list, created]);
+        this.form.set(null);
+        this.toast.show('Conference added', created.title, '🎉');
+      });
+    } else {
+      // UPDATE
+      this.service.updateConference(conference.id, conference).subscribe((saved) => {
+        this.conferences.update((list) => list.map((item) => (item.id === saved.id ? saved : item)));
+        this.form.set(null);
+        this.toast.show('Conference updated', saved.title, '✏️');
+      });
     }
+  }
 
-    this.conferences.update((conferences) =>
-      conferences.map((item) =>
-        item === conference ? { ...item, nbParticipants: item.nbParticipants + 1 } : item,
-      ),
-    );
-    this.toastService.show('You’re registered!', `See you at “${conference.title}”.`, '🎟️');
+  // DELETE — called from the confirmation pop-up
+  delete(): void {
+    const c = this.toDelete()!;
+
+    this.service.deleteConference(c.id!).subscribe(() => {
+      this.conferences.update((list) => list.filter((item) => item.id !== c.id));
+      this.toDelete.set(null);
+      this.toast.show('Conference deleted', c.title, '🗑️');
+    });
   }
 }
